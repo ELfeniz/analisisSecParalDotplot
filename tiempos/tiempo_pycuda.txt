@@ -1,0 +1,4 @@
+Tiempo carga datos: 0.01 segundos
+Tiempo calculo dotplot pycuda: 13.92 segundos
+Tiempo filtrado diagonales pycuda: 14.94 segundos
+Tiempo Graficas pycuda: 5.66 segundos

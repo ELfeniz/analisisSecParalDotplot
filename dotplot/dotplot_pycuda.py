@@ -36,7 +36,7 @@ def convertir_secuencia_a_numeros(secuencia):
     return np.array([mapa[base] for base in secuencia], dtype=np.byte)
 
 # Función principal para generar el dotplot y guardar en memmap
-def dotplot_pycuda_memmap(secuencia1, secuencia2, output_file='dotplot_memmap.dat', bloque_tamano=500, subbloque_tamano=100):
+def dotplot_pycuda_memmap(secuencia1, secuencia2, output_file='dotplot_memmap_pycuda.dat', bloque_tamano=500, subbloque_tamano=100):
     sec1_numerica = convertir_secuencia_a_numeros(secuencia1)
     sec2_numerica = convertir_secuencia_a_numeros(secuencia2)
     len1, len2 = len(secuencia1), len(secuencia2)
@@ -79,67 +79,3 @@ def dotplot_pycuda_memmap(secuencia1, secuencia2, output_file='dotplot_memmap.da
 
     dotplot.flush()
     return dotplot
-
-# Función para filtrar diagonales en la matriz
-def filtrar_diagonales_pycuda(dotplot_memmap, output_file='diagonales_memmap.dat', bloque_tamano=500):
-    len1, len2 = dotplot_memmap.shape
-    resultado_memmap = np.memmap(output_file, dtype=np.int32, mode='w+', shape=(len1, len2))
-    resultado_memmap[:] = 0
-
-    block_size = (32, 32, 1)
-    total_bloques = (len1 // bloque_tamano + (1 if len1 % bloque_tamano != 0 else 0))
-    with tqdm(total=total_bloques, desc="Filtrando diagonales", unit="bloques") as pbar:
-        for i in range(0, len1, bloque_tamano):
-            bloque_len1 = min(bloque_tamano, len1 - i)
-            bloque = dotplot_memmap[i:i + bloque_len1, :]
-
-            dotplot_gpu = gpuarray.to_gpu(bloque.flatten())
-            resultado_gpu = gpuarray.zeros((bloque_len1, len2), dtype=np.int32)
-
-            grid_size = (
-                (bloque_len1 + block_size[0] - 1) // block_size[0],
-                (len2 + block_size[1] - 1) // block_size[1],
-            )
-
-            func = mod.get_function("detectar_diagonales")
-            func(
-                dotplot_gpu, resultado_gpu,
-                np.int32(bloque_len1), np.int32(len2),
-                block=block_size, grid=grid_size,
-            )
-
-            resultado_bloque = resultado_gpu.get().reshape(bloque_len1, len2)
-            resultado_memmap[i:i + bloque_len1, :] = resultado_bloque
-
-            del dotplot_gpu, resultado_gpu
-            pbar.update(1)
-
-    resultado_memmap.flush()
-    return resultado_memmap
-
-# Visualizar matriz con matplotlib
-import matplotlib.pyplot as plt
-
-def visualizar_matriz(matriz, nombre_salida='resultado.png'):
-    plt.figure(figsize=(10, 10))
-    plt.imshow(matriz, cmap='Greys', aspect='auto')
-    plt.savefig(nombre_salida)
-    plt.close()
-
-# Código principal
-if __name__ == "__main__":
-    # Ejemplo de entrada
-    secuencia1 = "ACGTACGTACGTACGTACGT"
-    secuencia2 = "TACGTACGTACGTACGTACG"
-
-    # Generar dotplot
-    dotplot = dotplot_pycuda_memmap(secuencia1, secuencia2, output_file='dotplot_memmap.dat')
-
-    # Filtrar diagonales
-    diagonales = filtrar_diagonales_pycuda(dotplot, output_file='diagonales_memmap.dat')
-
-    # Visualizar resultados
-    visualizar_matriz(np.array(dotplot), 'dotplot_pycuda.png')
-    visualizar_matriz(np.array(diagonales), 'diagonales_pycuda.png')
-
-    print("Proceso completado: dotplot y diagonales generados.")

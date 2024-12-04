@@ -1,0 +1,4 @@
+Tiempo carga datos: 0.01 segundos
+Tiempo calculo dotplot mpi: 0.12 segundos
+Tiempo filtrado diagonales mpi: 0.18 segundos
+Tiempo Graficas mpi: 0.68 segundos
