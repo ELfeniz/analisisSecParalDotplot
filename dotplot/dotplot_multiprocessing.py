@@ -11,7 +11,7 @@ def comparar_indices(args):
     dotplot_memmap[i, :] = [1 if secuencia1[i] == secuencia2[j] else 0 for j in range(len(secuencia2))]
     return i
 
-def dotplot_multiprocessing_memmap(secuencia1, secuencia2, output_file='dotplot_memmap_multiprocessing.dat', num_procesos=mp.cpu_count(), bloque_tamano=100):
+def dotplot_multiprocessing_memmap(secuencia1, secuencia2, output_file='dotplot_memmap_multiprocessing.dat', num_procesos=mp.cpu_count(), bloque_tamano=1000):
     """
     Calcula el dotplot de dos secuencias utilizando multiprocessing y np.memmap,
     procesando en bloques para evitar saturar la memoria.
