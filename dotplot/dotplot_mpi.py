@@ -23,7 +23,7 @@ def dotplot_mpi_memmap(secuencia1, secuencia2, output_file='dotplot_memmap_mpi.d
 
     # Crear archivo memmap solo en el proceso root
     if rank == 0:
-        dotplot = np.memmap(output_file, dtype=np.int8, mode='w+', shape=(len1, len2))
+        dotplot = np.memmap(output_file, dtype=np.int32, mode='w+', shape=(len1, len2))
     else:
         dotplot = None
 
@@ -33,7 +33,7 @@ def dotplot_mpi_memmap(secuencia1, secuencia2, output_file='dotplot_memmap_mpi.d
     fin = len1 if rank == size - 1 else (rank + 1) * chunk_size
 
     # Crear la matriz local para el dotplot
-    dotplot_local = np.zeros((fin - inicio, len2), dtype=np.int8)
+    dotplot_local = np.zeros((fin - inicio, len2), dtype=np.int32)
 
     # Barra de progreso para cada proceso
     total_bloques = (fin - inicio) // bloque_tamano + (1 if (fin - inicio) % bloque_tamano != 0 else 0)
@@ -44,7 +44,7 @@ def dotplot_mpi_memmap(secuencia1, secuencia2, output_file='dotplot_memmap_mpi.d
                 bloque2 = secuencia2[j:j + bloque_tamano]
 
                 # Crear una submatriz para el bloque actual
-                submatriz = np.zeros((len(bloque1), len(bloque2)), dtype=np.int8)
+                submatriz = np.zeros((len(bloque1), len(bloque2)), dtype=np.int32)
 
                 # Calcular el dotplot para el bloque actual
                 for bi, base1 in enumerate(bloque1):

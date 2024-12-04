@@ -29,7 +29,7 @@ def dotplot_multiprocessing_memmap(secuencia1, secuencia2, output_file='dotplot_
     len1, len2 = len(secuencia1), len(secuencia2)
 
     # Crear un archivo memmap para almacenar el dotplot
-    dotplot_memmap = np.memmap(output_file, dtype=np.int8, mode='w+', shape=(len1, len2))
+    dotplot_memmap = np.memmap(output_file, dtype=np.int32, mode='w+', shape=(len1, len2))
 
     # Dividir la secuencia1 en bloques para el procesamiento paralelo
     bloques = [(i, secuencia1, secuencia2, dotplot_memmap) for i in range(len(secuencia1))]

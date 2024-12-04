@@ -204,7 +204,7 @@ def visualizar_memmap_por_bloques2(archivo_memmap, shape, nombre_salida, bloque_
         bloque_tamano (int): Tamaño de los bloques para la visualización.
     """
     # Cargar el archivo memmap
-    matriz_memmap = np.memmap(archivo_memmap, dtype=np.int8, mode='r', shape=shape)
+    matriz_memmap = np.memmap(archivo_memmap, dtype=np.int32, mode='r', shape=shape)
     filas, columnas = shape
 
     # Crear la figura

@@ -18,7 +18,7 @@ def dotplot_secuencial_memmap(secuencia1, secuencia2, output_file='dotplot_memma
     len1, len2 = len(secuencia1), len(secuencia2)
 
     # Crear un archivo memmap para almacenar el dotplot
-    dotplot = np.memmap(output_file, dtype=np.int8, mode='w+', shape=(len1, len2))
+    dotplot = np.memmap(output_file, dtype=np.int32, mode='w+', shape=(len1, len2))
 
     # Calcular el número total de bloques para la barra de progreso
     total_bloques = (len1 // bloque_tamano + (1 if len1 % bloque_tamano != 0 else 0)) * \
@@ -33,7 +33,7 @@ def dotplot_secuencial_memmap(secuencia1, secuencia2, output_file='dotplot_memma
                 bloque2 = secuencia2[j:j + bloque_tamano]
 
                 # Crear una submatriz para el bloque actual
-                submatriz = np.zeros((len(bloque1), len(bloque2)), dtype=np.int8)
+                submatriz = np.zeros((len(bloque1), len(bloque2)), dtype=np.int32)
 
                 # Calcular el dotplot para el bloque actual
                 for bi, base1 in enumerate(bloque1):
