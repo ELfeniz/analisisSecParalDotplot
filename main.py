@@ -3,11 +3,11 @@ from dotplot.fasta_utils import cargar_secuencias_fasta
 from dotplot.dotplot_sequential import dotplot_secuencial
 from dotplot.dotplot_multiprocessing import dotplot_multiprocessing
 from dotplot.dotplot_mpi import dotplot_mpi
-from dotplot.dotplot_pycuda import dotplot_pycuda
+from dotplot.dotplot_pycuda import dotplot_pycuda_memmap as dotplot_pycuda
+
 from dotplot.image_filter import filtrar_diagonales
 import matplotlib.pyplot as plt
 
-import matplotlib.pyplot as plt
 
 def generar_dotplot(dotplot, nombre_salida, bloque_tamano=500):
     """
