@@ -1,4 +1,4 @@
 Tiempo carga datos: 0.01 segundos
-Tiempo calculo dotplot secuencial: 43.33 segundos
-Tiempo filtrado diagonales secuencial: 34.26 segundos
-Tiempo Graficas secuencial: 2.32 segundos
+Tiempo calculo dotplot secuencial: 9.91 segundos
+Tiempo filtrado diagonales secuencial: 6.13 segundos
+Tiempo Graficas secuencial: 1.17 segundos

@@ -115,20 +115,22 @@ def filtrar_diagonales(dotplot_memmap, output_file, bloque_tamano=500):
     return resultado_memmap
 
 
-def procesar_bloque(i, dotplot_memmap, len1, len2, bloque_tamano):
+def procesar_bloque_cpu(i, dotplot_memmap, len1, len2, bloque_tamano):
     """
-    Procesa un bloque de la matriz para filtrar las diagonales.
+    Procesa un bloque de la matriz para filtrar las diagonales en la versión CPU.
+    Similar a la lógica de la GPU, se verifica la diagonal de cada bloque.
     """
     bloque_len1 = min(bloque_tamano, len1 - i)
     bloque = dotplot_memmap[i:i + bloque_len1, :]
 
-    # Aquí aplicamos la lógica de filtrado de diagonales (puedes optimizarla)
     resultado_bloque = np.zeros_like(bloque, dtype=np.int32)
 
-    for idx1 in range(bloque_len1):
-        for idx2 in range(len2):
-            if bloque[idx1, idx2] == 1:  # Filtra las diagonales según tu lógica
-                resultado_bloque[idx1, idx2] = 1  # Marca la diagonal
+    # Aplicar el mismo filtro de diagonales que la GPU
+    for idx1 in range(bloque_len1 - 1):  # Evitar indexación fuera de los límites
+        for idx2 in range(len2 - 1):
+            # Verificamos la diagonal: si hay coincidencia de 1s
+            if bloque[idx1, idx2] == 1 and bloque[idx1 + 1, idx2 + 1] == 1:
+                resultado_bloque[idx1, idx2] = 1
 
     return i, resultado_bloque
 
@@ -136,6 +138,7 @@ def filtrar_diagonales_cpu(dotplot_memmap, output_file, bloque_tamano=500):
     """
     Filtra las diagonales de la matriz dotplot utilizando procesamiento en paralelo en la CPU.
     Guarda el resultado en un archivo memmap.
+    La lógica de filtrado es similar a la de la GPU para obtener resultados consistentes.
     """
     len1, len2 = dotplot_memmap.shape
     resultado_memmap = np.memmap(output_file, dtype=np.int32, mode='w+', shape=(len1, len2))
@@ -147,7 +150,7 @@ def filtrar_diagonales_cpu(dotplot_memmap, output_file, bloque_tamano=500):
     # Usamos multiprocessing para paralelizar el procesamiento de los bloques
     with mp.Pool(mp.cpu_count()) as pool:
         # Aplicamos procesamiento en paralelo para cada bloque
-        resultados = list(tqdm(pool.starmap(procesar_bloque, 
+        resultados = list(tqdm(pool.starmap(procesar_bloque_cpu, 
                                            [(i, dotplot_memmap, len1, len2, bloque_tamano) for i in range(0, len1, bloque_tamano)]),
                               total=total_bloques, desc="Filtrando diagonales", unit="bloques"))
 

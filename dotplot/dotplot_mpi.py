@@ -51,8 +51,12 @@ def dotplot_mpi_memmap(secuencia1, secuencia2, output_file='dotplot_memmap_mpi.d
                     for bj, base2 in enumerate(bloque2):
                         submatriz[bi, bj] = 1 if base1 == base2 else 0
 
+                # Determinar los índices finales para evitar desbordamientos
+                end_i = min(i - inicio + len(bloque1), dotplot_local.shape[0])
+                end_j = min(j + len(bloque2), dotplot_local.shape[1])
+
                 # Insertar la submatriz en la matriz local
-                dotplot_local[i - inicio:i - inicio + len(bloque1), j:j + len(bloque2)] = submatriz
+                dotplot_local[i - inicio:end_i, j:end_j] = submatriz
 
             # Actualizar la barra de progreso
             pbar.update(1)
